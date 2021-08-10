@@ -9,7 +9,7 @@ import Foundation
 
 struct SongsModel:Decodable{
     
-    let songs: [Songs]
+    let songs: [SongsDatabase]
     
 }
 struct Songs:Decodable {

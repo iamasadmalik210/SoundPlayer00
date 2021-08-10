@@ -17,9 +17,8 @@
 		C3C0780226BD459900FDF0AA /* RealmModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C0780126BD459900FDF0AA /* RealmModels.swift */; };
 		C3D1FB7426BA6A740056338F /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D1FB7326BA6A740056338F /* Options.swift */; };
 		C3D1FB7726BA6D930056338F /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D1FB7626BA6D930056338F /* SearchView.swift */; };
-		C3D1FB7926BA7AE10056338F /* 01. We Made It.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C3D1FB7826BA7AE10056338F /* 01. We Made It.mp3 */; };
-		C3D1FB7B26BA831F0056338F /* 08. Come Through (feat. Chris Brown).mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C3D1FB7A26BA831F0056338F /* 08. Come Through (feat. Chris Brown).mp3 */; };
 		C3D1FB7D26BAA39D0056338F /* SoundSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D1FB7C26BAA39D0056338F /* SoundSettingViewController.swift */; };
+		C3D8DF5126C29B9F00F32FD7 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D8DF5026C29B9F00F32FD7 /* Image.swift */; };
 		C3EE244926B9563300008C26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE244826B9563300008C26 /* AppDelegate.swift */; };
 		C3EE244B26B9563300008C26 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE244A26B9563300008C26 /* SceneDelegate.swift */; };
 		C3EE244D26B9563300008C26 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE244C26B9563300008C26 /* TabBarViewController.swift */; };
@@ -47,9 +46,8 @@
 		C3C0780126BD459900FDF0AA /* RealmModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModels.swift; sourceTree = "<group>"; };
 		C3D1FB7326BA6A740056338F /* Options.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		C3D1FB7626BA6D930056338F /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
-		C3D1FB7826BA7AE10056338F /* 01. We Made It.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "01. We Made It.mp3"; sourceTree = "<group>"; };
-		C3D1FB7A26BA831F0056338F /* 08. Come Through (feat. Chris Brown).mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "08. Come Through (feat. Chris Brown).mp3"; sourceTree = "<group>"; };
 		C3D1FB7C26BAA39D0056338F /* SoundSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSettingViewController.swift; sourceTree = "<group>"; };
+		C3D8DF5026C29B9F00F32FD7 /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		C3EE244526B9563300008C26 /* SoundPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3EE244826B9563300008C26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3EE244A26B9563300008C26 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -169,7 +167,6 @@
 		C3EE245D26B956D300008C26 /* CoreTabs */ = {
 			isa = PBXGroup;
 			children = (
-				C3D1FB7A26BA831F0056338F /* 08. Come Through (feat. Chris Brown).mp3 */,
 				C3EE245F26B956F800008C26 /* SoundViewController.swift */,
 				C3EE246126B956FE00008C26 /* CustomViewController.swift */,
 				C3EE246326B9570700008C26 /* SettingViewController.swift */,
@@ -192,7 +189,6 @@
 			children = (
 				C3D1FB7526BA6D820056338F /* TableViewHeaders */,
 				C3EE246726B9599700008C26 /* SoundsTableViewCell.swift */,
-				C3D1FB7826BA7AE10056338F /* 01. We Made It.mp3 */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -208,6 +204,7 @@
 				C3C077FF26BD199D00FDF0AA /* NewSoundData.swift */,
 				C3C0780126BD459900FDF0AA /* RealmModels.swift */,
 				C3C077F926BBF1B500FDF0AA /* SongsDatabase.swift */,
+				C3D8DF5026C29B9F00F32FD7 /* Image.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -288,8 +285,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3EE245526B9563300008C26 /* LaunchScreen.storyboard in Resources */,
-				C3D1FB7B26BA831F0056338F /* 08. Come Through (feat. Chris Brown).mp3 in Resources */,
-				C3D1FB7926BA7AE10056338F /* 01. We Made It.mp3 in Resources */,
 				C3EE245226B9563300008C26 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +347,7 @@
 				C3C077FA26BBF1B500FDF0AA /* SongsDatabase.swift in Sources */,
 				C3D1FB7D26BAA39D0056338F /* SoundSettingViewController.swift in Sources */,
 				C3C077F226BBB28800FDF0AA /* SongsModel.swift in Sources */,
+				C3D8DF5126C29B9F00F32FD7 /* Image.swift in Sources */,
 				C3D1FB7426BA6A740056338F /* Options.swift in Sources */,
 				C3EE246826B9599700008C26 /* SoundsTableViewCell.swift in Sources */,
 				C3EE244D26B9563300008C26 /* TabBarViewController.swift in Sources */,

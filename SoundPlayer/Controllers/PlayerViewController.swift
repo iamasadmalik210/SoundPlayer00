@@ -14,7 +14,7 @@ class PlayerViewController: UIViewController {
     var music : String?
     
     
-    var newData : Songs?
+    var newData : SongsDatabase?
     var newImage : UIImage?
     
     var audioPlayer : AVAudioPlayer!
@@ -125,7 +125,6 @@ class PlayerViewController: UIViewController {
         
         
         music = newData?.song_file
-        print(music)
 
         playButton.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
         
@@ -147,62 +146,107 @@ class PlayerViewController: UIViewController {
     }
     @objc func didTapPlay(){
         
-        guard let musicName = newData?.song_file else {
+        guard let musicName = newData?.song_file?.trimmingCharacters(in: .whitespaces) else {
             print("song Name Error ")
             return
         }
+//                let newurl = type.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+
+        
+        print(musicName)
         
         let urlstring = "http://collections.codecture.co/assets/upload_files/\(musicName)"
+        
+        
+        
         print(urlstring)
-        guard let url = NSURL(string: urlstring) else {
-            return
-        }
-//        print("the url = \(url!)")
-        downloadFileFromURL(url: url)
-        
-        
-    }
-    
-    func downloadFileFromURL(url:NSURL){
 
-        var downloadTask:URLSessionDownloadTask
-        downloadTask = URLSession.shared.downloadTask(with: url as URL, completionHandler: { [weak self](URL, response, error) -> Void in
-            self?.play(url: URL! as NSURL)
-        })
-            
-        downloadTask.resume()
-        
-    }
-    func play(url:NSURL) {
-        print("playing \(url)")
-//        print(audioPlayer.isPlaying)
-       
-        
-        do {
-            self.audioPlayer = try AVAudioPlayer(contentsOf: url as URL)
-            audioPlayer!.prepareToPlay()
-            audioPlayer!.volume = 1.0
-            audioPlayer!.play()
-            print("Audio is Playing")
-            
-                
-            
-        } catch let error as NSError {
-            //self.player = nil
-            print(error.localizedDescription)
-        } catch {
-            print("AVAudioPlayer init failed")
+
+       if !urlstring.isEmpty{
+        checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
+            guard let self = self else{
+                return
+            }
+            self.play(url: downloadedURL)
         }
+    }
         
+        
+        
+
+        
+    }
+ 
+       
+    // Checking for download
+    
+    func checkBookFileExists(withLink link: String, completion: @escaping ((_ filePath: URL)->Void)){
+        let urlString = link.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+        if let url  = URL.init(string: urlString ?? ""){
+            let fileManager = FileManager.default
+            if let documentDirectory = try? fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create: false){
+
+                let filePath = documentDirectory.appendingPathComponent(url.lastPathComponent, isDirectory: false)
+
+                do {
+                    if try filePath.checkResourceIsReachable() {
+                        print("file exist")
+                        completion(filePath)
+
+                    } else {
+                        print("file doesnt exist")
+                        downloadFile(withUrl: url, andFilePath: filePath, completion: completion)
+                    }
+                } catch {
+                    print("file doesnt exist")
+                    downloadFile(withUrl: url, andFilePath: filePath, completion: completion)
+                }
+            }else{
+                 print("file doesnt exist")
+            }
+        }else{
+                print("file doesnt exist")
+        }
+    }
+        
+    
+    func downloadFile(withUrl url: URL, andFilePath filePath: URL, completion: @escaping ((_ filePath: URL)->Void)){
+        DispatchQueue.global(qos: .background).async {
+            do {
+                let data = try Data.init(contentsOf: url)
+                try data.write(to: filePath, options: .atomic)
+                print("saved at \(filePath.absoluteString)")
+                DispatchQueue.main.async {
+                    completion(filePath)
+                }
+            } catch {
+                print("an error happened while downloading or saving the file")
+            }
+        }
     }
         
         
         
         
-        
-        
-        
-        
+    func play(url: URL) {
+        print("playing \(url)")
+
+        do {
+
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.prepareToPlay()
+//            audioPlayer?.delegate = self
+            audioPlayer?.play()
+            let percentage = (audioPlayer?.currentTime ?? 0)/(audioPlayer?.duration ?? 0)
+            DispatchQueue.main.async {
+                // do what ever you want with that "percentage"
+            }
+
+        } catch let error {
+            audioPlayer = nil
+        }
+
+    }
     
     
     

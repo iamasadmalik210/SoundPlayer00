@@ -102,49 +102,35 @@ class SoundsTableViewCell: UITableViewCell {
     }
     var imageArray  = [UIImage]()
     
-    public func configure(viewModels:Songs){
+//    public func configure(viewModels:Songs){
+//
+//      //  soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
+//
+//
+//        soundTitle.text = viewModels.song_title
+//        soundSubtitle.text = viewModels.song_description
+//
+//    }
+    
+    
+    
+    
+    public func configure(viewModels:SongsDatabase){
         
       //  soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
         
         
         soundTitle.text = viewModels.song_title
         soundSubtitle.text = viewModels.song_description
+
+    }
+    
+    public func configureImage(viewModels:Image){
         
-//
-//        print("printing iamge")
-//        print(soundImageView.image)
-//
-//        guard let myImage = soundImageView.image else {
-//            print("iamge errer")
-//            return
-//        }
-//        imageArray.append(myImage)
-//
-//      let image =   soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
-//
-//        print("image Array")
-//        print(imageArray)
-//
-//
+      //  soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
+        
+        
+        soundImageView.image = viewModels.image
+
     }
 }
-
-/*
- let data = ImageSaver()
- 
- 
- 
- let myImageData = UIImage(systemName: "house.fill")!.pngData() as Data?
-
- do {
-     
-     try realm.write({
-     
-         data.imageData =  myImageData
-         self.realm.add(data)
-     })
- }
- catch {
-     print(error)
- }
- */

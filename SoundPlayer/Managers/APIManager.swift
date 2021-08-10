@@ -69,15 +69,7 @@ class APIManager {
             
             do {
                 let result = try JSONDecoder().decode(SongsModel.self, from: data)
-                
-//                let json = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
-                
-                
-//                let response = try JSONDecoder().decode(APIResponse.self, from: data)
-//
-//                guard let dodgeCoinData = response.data.values.first else {
-//                    return
-//                }
+
                 completion(.success(result))
             }
             catch{
@@ -97,30 +89,33 @@ class APIManager {
     
     
     public func loadImage(with type:String, completion:@escaping (Result<UIImage, Error>) -> Void) {
+        
+        print(type)
+        
+        let newurl = type.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+       
+//        guard let url = URL(string: "https://static.dw.com/image/51029829_303.jpg") else {
+//            print("url rrror")
+//                return
+//            }
         guard let url = URL(string: Constants.resourceURL + "\(type)") else {
+            print("url rrror")
                 return
             }
-        print(url)
+        
+        print("the new url == \(Constants.resourceURL)\(newurl!)")
 
-            URLSession.shared.dataTask(with: url) { (data,_,_) in
-                guard let data = data else {
-                    return
-                }
-                guard let image = UIImage(data: data) else {
-                    return
-                }
-                print(data)
-                do {
-                
-                   
-                    completion(.success(image))
-                }
-                catch {
-                    completion(.failure(error))
-                }
-
-            }  .resume()
+        
+       let task = URLSession.shared.dataTask(with: url) { data, _, err in
+            guard let imageData = data , err == nil  else { return}
+            let image = UIImage(data: imageData)
+        print(imageData)
+        completion(.success(image!))
         }
+        task.resume()
+ 
+        }
+    
     
     
     
@@ -155,7 +150,6 @@ class APIManager {
             do {
                 let result = try JSONDecoder().decode(SongsModel.self, from: data)
                 
-                var songsDatabase = SongsDatabase()
                                
                 
                 completion(.success(result))
