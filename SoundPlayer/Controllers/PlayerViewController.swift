@@ -107,7 +107,7 @@ class PlayerViewController: UIViewController {
         timerLabel.text = timerValue as? String
         
         view.backgroundColor = .darkGray
-        print(newData)
+//        print(newData)
         
       
         songTitle.text = newData?.song_title
@@ -120,8 +120,8 @@ class PlayerViewController: UIViewController {
         
         // getting image from the url
         
-        songImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(selectedImage)"), completed: nil)
-            
+//        songImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(selectedImage)"), completed: nil)
+        songImageView.image = self.getSavedImage(named: selectedImage.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
         
         
         music = newData?.song_file
@@ -144,6 +144,18 @@ class PlayerViewController: UIViewController {
 
     
     }
+    
+    func getSavedImage(named: String) -> UIImage? {
+        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+            
+//            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
+            
+            
+            
+            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
+        }
+        return nil
+}
     @objc func didTapPlay(){
         
         guard let musicName = newData?.song_file?.trimmingCharacters(in: .whitespaces) else {
@@ -163,7 +175,8 @@ class PlayerViewController: UIViewController {
 
 
        if !urlstring.isEmpty{
-        checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
+        
+        APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
             guard let self = self else{
                 return
             }
@@ -180,51 +193,7 @@ class PlayerViewController: UIViewController {
        
     // Checking for download
     
-    func checkBookFileExists(withLink link: String, completion: @escaping ((_ filePath: URL)->Void)){
-        let urlString = link.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
-        if let url  = URL.init(string: urlString ?? ""){
-            let fileManager = FileManager.default
-            if let documentDirectory = try? fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create: false){
-
-                let filePath = documentDirectory.appendingPathComponent(url.lastPathComponent, isDirectory: false)
-
-                do {
-                    if try filePath.checkResourceIsReachable() {
-                        print("file exist")
-                        completion(filePath)
-
-                    } else {
-                        print("file doesnt exist")
-                        downloadFile(withUrl: url, andFilePath: filePath, completion: completion)
-                    }
-                } catch {
-                    print("file doesnt exist")
-                    downloadFile(withUrl: url, andFilePath: filePath, completion: completion)
-                }
-            }else{
-                 print("file doesnt exist")
-            }
-        }else{
-                print("file doesnt exist")
-        }
-    }
-        
     
-    func downloadFile(withUrl url: URL, andFilePath filePath: URL, completion: @escaping ((_ filePath: URL)->Void)){
-        DispatchQueue.global(qos: .background).async {
-            do {
-                let data = try Data.init(contentsOf: url)
-                try data.write(to: filePath, options: .atomic)
-                print("saved at \(filePath.absoluteString)")
-                DispatchQueue.main.async {
-                    completion(filePath)
-                }
-            } catch {
-                print("an error happened while downloading or saving the file")
-            }
-        }
-    }
-        
         
         
         
@@ -237,90 +206,24 @@ class PlayerViewController: UIViewController {
             audioPlayer?.prepareToPlay()
 //            audioPlayer?.delegate = self
             audioPlayer?.play()
-            let percentage = (audioPlayer?.currentTime ?? 0)/(audioPlayer?.duration ?? 0)
+            let _ = (audioPlayer?.currentTime ?? 0)/(audioPlayer?.duration ?? 0)
             DispatchQueue.main.async {
                 // do what ever you want with that "percentage"
             }
 
         } catch let error {
+            print("Error = \(error)")
             audioPlayer = nil
         }
 
     }
     
     
+}
     
     
     
     
     
     
-    
-    
-    
-        
-        //MARK:  Old method
-//        print("didTapPlay")
-//        guard let music = newData?.song_file else {
-//            return
-//        }
-//
-//        let urlstring = "http://radio.spainmedia.es/wp-content/uploads/2015/12/\(newData?.song_file)"
-//        print(music)
-//
-//        guard let url = Bundle.main.url(forResource: urlstring, withExtension: "") else {
-//            print("URL Error")
-//            return
-//
-//        }
-//
-//        print("Printing Music in the DidTapPlay")
-//                print(music)
-//
-//        if let player = audioPlayer,player.isPlaying {
-//
-//            player.stop()
-//        }
-//        else {
-//            print("Playing")
-//
-//            playSong(url)
-//
-//    }
-    }
-
-//    private func playSong(_ url: URL){
-//
-//        do{
-//            try AVAudioSession.sharedInstance().setCategory(.playback,mode: .default)
-//            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
-//
-////            DispatchQueue.main.async {
-////
-////                self.audioName = url.lastPathComponent
-////                self.myPlayerView.nameLabel.text = url.lastPathComponent
-////
-////            }
-//
-//            audioPlayer?.volume = 1
-//
-//            audioPlayer = try AVAudioPlayer(contentsOf: url)
-//            print("plying")
-//            guard let player = audioPlayer else {
-//                print("PLayer Error")
-//                return
-//            }
-//            player.play()
-//
-//
-//
-//        }
-//
-//        catch{
-//
-//            print(error.localizedDescription)
-//        }
-//    }
-        
-    
-
+   

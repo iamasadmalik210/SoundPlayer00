@@ -37,6 +37,8 @@ class SearchView: UIView {
         addSubview(searchTextField)
         addSubview(underlineView)
         
+        backgroundColor = .systemBackground
+        
        
     }
     

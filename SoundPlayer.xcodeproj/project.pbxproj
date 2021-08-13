@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1A63597786713FA28DC8BF83 /* Pods_SoundPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED7970B8463633FF4C0CDB81 /* Pods_SoundPlayer.framework */; };
+		C3413B3126C3DE77000785EF /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3413B3026C3DE77000785EF /* PlayerView.swift */; };
 		C3C077F226BBB28800FDF0AA /* SongsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C077F126BBB28800FDF0AA /* SongsModel.swift */; };
 		C3C077F826BBB41E00FDF0AA /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C077F726BBB41E00FDF0AA /* APIManager.swift */; };
 		C3C077FA26BBF1B500FDF0AA /* SongsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C077F926BBF1B500FDF0AA /* SongsDatabase.swift */; };
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		6DA6B393D903EF308A56B238 /* Pods-SoundPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundPlayer.debug.xcconfig"; path = "Target Support Files/Pods-SoundPlayer/Pods-SoundPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 		845ECB2073CE23FB4D13C3B1 /* Pods-SoundPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SoundPlayer.release.xcconfig"; path = "Target Support Files/Pods-SoundPlayer/Pods-SoundPlayer.release.xcconfig"; sourceTree = "<group>"; };
+		C3413B3026C3DE77000785EF /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		C3C077F126BBB28800FDF0AA /* SongsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongsModel.swift; sourceTree = "<group>"; };
 		C3C077F726BBB41E00FDF0AA /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		C3C077F926BBF1B500FDF0AA /* SongsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongsDatabase.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 			children = (
 				C3EE246F26B966ED00008C26 /* CollectionviewCells */,
 				C3EE246626B9598700008C26 /* TableViewCells */,
+				C3413B3026C3DE77000785EF /* PlayerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -357,6 +360,7 @@
 				C3EE246E26B960FE00008C26 /* PlayerViewController.swift in Sources */,
 				C3EE244926B9563300008C26 /* AppDelegate.swift in Sources */,
 				C3C077FE26BC02A200FDF0AA /* ImageViewController.swift in Sources */,
+				C3413B3126C3DE77000785EF /* PlayerView.swift in Sources */,
 				C3C0780226BD459900FDF0AA /* RealmModels.swift in Sources */,
 				C3EE244B26B9563300008C26 /* SceneDelegate.swift in Sources */,
 				C3EE246426B9570700008C26 /* SettingViewController.swift in Sources */,

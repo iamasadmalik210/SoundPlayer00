@@ -10,10 +10,18 @@ import SDWebImage
 import RealmSwift
 
 
+protocol SoundsTableViewCellDelegate : AnyObject {
+    
+    func didTapPlayButton(button:UIButton)
+}
+
+
 class SoundsTableViewCell: UITableViewCell {
     
 //    var realm = try! Re
     
+    
+    weak var delegate : SoundsTableViewCellDelegate?
     
     public let soundImageView : UIImageView = {
         
@@ -37,7 +45,7 @@ class SoundsTableViewCell: UITableViewCell {
        let label = UILabel()
         
         label.font = .systemFont(ofSize: 18)
-        label.textColor = .white
+        label.textColor = .label
 //        label.backgroundColor  = .red
         label.textAlignment  = .center
 
@@ -50,7 +58,7 @@ class SoundsTableViewCell: UITableViewCell {
        let label = UILabel()
         
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .white
+        label.textColor = .secondaryLabel
 //        label.backgroundColor  = .red
         label.textAlignment  = .center
 
@@ -59,7 +67,7 @@ class SoundsTableViewCell: UITableViewCell {
         
     }()
     
-    private let playButton : UIButton = {
+    public let playButton : UIButton = {
         let button = UIButton()
         
         button.setImage(UIImage(systemName: "playpause"), for: .normal)
@@ -77,9 +85,19 @@ class SoundsTableViewCell: UITableViewCell {
         addSubview(soundTitle)
         addSubview(soundImageView)
         addSubview(soundSubtitle)
-        addSubview(playButton)
+        contentView.addSubview(playButton)
+        
+        
+        playButton.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
+    }
+    @objc func didTapPlay(){
+        delegate?.didTapPlayButton(button: playButton)
+        
+        
     }
     
+    
+   
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -100,37 +118,37 @@ class SoundsTableViewCell: UITableViewCell {
         
         
     }
-    var imageArray  = [UIImage]()
-    
-//    public func configure(viewModels:Songs){
-//
-//      //  soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
-//
-//
-//        soundTitle.text = viewModels.song_title
-//        soundSubtitle.text = viewModels.song_description
-//
-//    }
-    
     
     
     
     public func configure(viewModels:SongsDatabase){
         
-      //  soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
+
         
+        self.soundTitle.text = viewModels.song_title
+        self.soundSubtitle.text = viewModels.song_description
+        DispatchQueue.main.async {
+            self.soundImageView.image = self.getSavedImage(named: (viewModels.song_image?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))!)
+
+           
+            
+        }
         
-        soundTitle.text = viewModels.song_title
-        soundSubtitle.text = viewModels.song_description
+       
 
     }
     
-    public func configureImage(viewModels:Image){
-        
-      //  soundImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(viewModels.song_image)"), completed: nil)
-        
-        
-        soundImageView.image = viewModels.image
-
-    }
+    
+    
+    func getSavedImage(named: String) -> UIImage? {
+        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+            
+//            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
+            
+            
+            
+            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
+        }
+        return nil
+}
 }

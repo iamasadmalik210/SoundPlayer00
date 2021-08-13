@@ -12,13 +12,10 @@ import AVFoundation
 
 class RealmSongs : Object {
 
-//    @objc dynamic var randomId:String = UUID().uuidString
     var songsDatabase = List<SongsDatabase>()
-//    var id : String = ""
-////    var song =
-    @objc dynamic var personalID : String = UUID().uuidString
-//    
-//    
+    @objc dynamic var personalID : Int = 0
+    
+    
 
     override static func primaryKey() -> String? {
         return "personalID"

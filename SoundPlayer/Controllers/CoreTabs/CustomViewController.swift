@@ -38,7 +38,7 @@ class CustomViewController: UIViewController {
         view.addSubview(collectionView)
         collectionView.delegate = self
         collectionView.dataSource = self
-        view.addSubview(searchView)
+//        view.addSubview(searchView)
         
         navigationController?.isNavigationBarHidden  = true
 
@@ -71,7 +71,7 @@ extension CustomViewController: UICollectionViewDelegate,UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width:CGFloat = 150
+
         return CGSize(width: 170, height: 230)
     }
     
