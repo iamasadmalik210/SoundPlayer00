@@ -8,12 +8,16 @@
 import UIKit
 
 class TabBarViewController: UITabBarController {
+    
+    var playerView = PlayerView()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
         view.backgroundColor = .gray
+        
         
         setUpControllers()
     }

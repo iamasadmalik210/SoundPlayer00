@@ -33,7 +33,7 @@ class SoundViewController: UIViewController {
     // MARK: UI's
     
     private let tableView : UITableView = {
-        let tableView = UITableView(frame: UIScreen.main.bounds, style: .grouped)
+        let tableView = UITableView(frame: UIScreen.main.bounds, style: .plain)
         
         tableView.register(SoundsTableViewCell.self, forCellReuseIdentifier: "cell")
 //        tableView.tableHeaderView = SearchView(frame: CGRect(x: 0, y: 0, width: tableView.width, height: 50))
@@ -59,32 +59,15 @@ class SoundViewController: UIViewController {
     
     // MARK: Life Cycle Methods
     
-    override func viewDidAppear(_ animated: Bool) {
-        playerView.isHidden = true
 
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        playerView.isHidden = true
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        playerView.isHidden = true
+//        playerView.isHidden = true
 
-        tableView.addSubview(playerView)
         playerView.delegate = self
+        view.addSubview(playerView)
         
-        
-        //        do {
-        //            try! realm.write({
-        //                self.realm.deleteAll()
-        //            })
-        //        }
-        
+     
         
         // Do any additional setup after loading the view.
         
@@ -119,7 +102,7 @@ class SoundViewController: UIViewController {
         
         
         searchView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height: 50)
-        tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: view.height - searchView.height)
+        tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: (view.height - searchView.height  ) - 175)
         spinner.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         spinner.center = tableView.center
         
@@ -127,14 +110,8 @@ class SoundViewController: UIViewController {
         
         
         
-        playerView.translatesAutoresizingMaskIntoConstraints = false
-        playerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        playerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        
-        // anchor your view right above the tabBar
-        playerView.bottomAnchor.constraint(equalTo: tabBarController!.tabBar.topAnchor).isActive = true
-        
-        playerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+//        
+        playerView.frame = CGRect(x: 0, y: tableView.bottom, width: view.width, height: 50)
         
     }
     
@@ -199,6 +176,10 @@ class SoundViewController: UIViewController {
                 }
                 
             case .failure(let error):
+                DispatchQueue.main.async {
+                    self.loadData()
+                    self.spinner.stopAnimating()
+                }
                 print("Printing Error")
                 print(error)
             }
@@ -390,7 +371,7 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource {
         
         let data = realmDataArray?[indexPath.row]
         print("Current Data")
-        passData(data!)
+//        passData(data!)
         
 //        if self.audioPlayer.isPlaying{
 //            self.audioPlayer.stop()
@@ -471,13 +452,16 @@ extension SoundViewController:  SoundsTableViewCellDelegate{
 extension SoundViewController: PlayerViewDelegate{
     func didTapStop() {
         
+        guard let audioPlayer = audioPlayer else {
+            return
+        }
+        
 //
         if audioPlayer.isPlaying {
             audioPlayer.stop()
         }
         else {
-            audioPlayer.play()
-        }
+            self.audioPlayer.play()        }
         print("Audio Stopped")
     }
     
