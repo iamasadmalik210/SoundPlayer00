@@ -17,9 +17,7 @@ protocol SoundsTableViewCellDelegate : AnyObject {
 
 
 class SoundsTableViewCell: UITableViewCell {
-    
-//    var realm = try! Re
-    
+        
     
     weak var delegate : SoundsTableViewCellDelegate?
     
@@ -128,7 +126,7 @@ class SoundsTableViewCell: UITableViewCell {
         self.soundTitle.text = viewModels.song_title
         self.soundSubtitle.text = viewModels.song_description
         DispatchQueue.main.async {
-            self.soundImageView.image = self.getSavedImage(named: (viewModels.song_image?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))!)
+            self.soundImageView.image = APIManager.shared.getSavedImage(named: (viewModels.song_image?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))!)
 
            
             
@@ -139,16 +137,16 @@ class SoundsTableViewCell: UITableViewCell {
     }
     
     
-    
-    func getSavedImage(named: String) -> UIImage? {
-        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-            
-//            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
-            
-            
-            
-            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
-        }
-        return nil
-}
+//    
+//    func getSavedImage(named: String) -> UIImage? {
+//        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+//            
+////            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
+//            
+//            
+//            
+//            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
+//        }
+//        return nil
+//}
 }

@@ -25,7 +25,7 @@ class CustomViewController: UIViewController {
         collectionView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         
         collectionView.register(SearchView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerView")
-
+        collectionView.backgroundColor = . systemBackground
         
         return collectionView
     }()
@@ -71,8 +71,13 @@ extension CustomViewController: UICollectionViewDelegate,UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        
+        let height = view.frame.size.height
+            let width = view.frame.size.width
+            // in case you you want the cell to be 40% of your controllers view
+            return CGSize(width: width * 0.43, height: height * 0.3)
 
-        return CGSize(width: 170, height: 230)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

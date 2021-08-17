@@ -36,8 +36,6 @@ class PlayerViewController: UIViewController {
         
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView .layer.cornerRadius = 10
-        imageView.clipsToBounds = true
         
         
         return imageView
@@ -97,6 +95,8 @@ class PlayerViewController: UIViewController {
         view.addSubview(playButton)
         
         
+        
+        
         configuringUI()
         
         
@@ -121,7 +121,7 @@ class PlayerViewController: UIViewController {
         // getting image from the url
         
 //        songImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(selectedImage)"), completed: nil)
-        songImageView.image = self.getSavedImage(named: selectedImage.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+        songImageView.image = APIManager.shared.getSavedImage(named: selectedImage.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
         
         
         music = newData?.song_file
@@ -133,7 +133,9 @@ class PlayerViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         timerLabel.frame = CGRect(x: 40, y: view.safeAreaInsets.top+20, width: view.width-80, height: 40)
+
         songImageView.frame = CGRect(x: 100, y: view.safeAreaInsets.top + 100, width: view.width-200, height: 200)
+        
         songImageView.layer.cornerRadius = songImageView.width/2
 
         songTitle.frame = CGRect(x: 20, y: songImageView.bottom+20, width: view.width - 40, height: 30)
@@ -145,17 +147,17 @@ class PlayerViewController: UIViewController {
     
     }
     
-    func getSavedImage(named: String) -> UIImage? {
-        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-            
-//            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
-            
-            
-            
-            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
-        }
-        return nil
-}
+//    func getSavedImage(named: String) -> UIImage? {
+//        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+//
+////            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
+//
+//
+//
+//            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
+//        }
+//        return nil
+//}
     @objc func didTapPlay(){
         
         guard let musicName = newData?.song_file?.trimmingCharacters(in: .whitespaces) else {

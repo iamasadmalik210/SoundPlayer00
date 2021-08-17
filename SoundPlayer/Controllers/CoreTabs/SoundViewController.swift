@@ -13,6 +13,7 @@ class SoundViewController: UIViewController {
     // Vars
     
     var playerView = PlayerView()
+    
     var viewModels = [Songs]()
     
     var myViewModels : [SongsDatabase]?
@@ -25,9 +26,11 @@ class SoundViewController: UIViewController {
     
     var searchView = SearchView()
     
-    
+    var searchArrRes : Results<SongsDatabase>?
     
     var realm = try! Realm()
+    
+    
     
     
     // MARK: UI's
@@ -36,8 +39,8 @@ class SoundViewController: UIViewController {
         let tableView = UITableView(frame: UIScreen.main.bounds, style: .plain)
         
         tableView.register(SoundsTableViewCell.self, forCellReuseIdentifier: "cell")
-//        tableView.tableHeaderView = SearchView(frame: CGRect(x: 0, y: 0, width: tableView.width, height: 50))
-
+        //        tableView.tableHeaderView = SearchView(frame: CGRect(x: 0, y: 0, width: tableView.width, height: 50))
+        
         return tableView
         
         
@@ -55,19 +58,20 @@ class SoundViewController: UIViewController {
     
     
     
-    
+    var searching : Bool!
     
     // MARK: Life Cycle Methods
     
-
+    
     override func viewDidLoad() {
+        
+        searching = false
         super.viewDidLoad()
-//        playerView.isHidden = true
-
+        //        playerView.isHidden = true
+        
         playerView.delegate = self
         view.addSubview(playerView)
         
-     
         
         // Do any additional setup after loading the view.
         
@@ -79,12 +83,12 @@ class SoundViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-        
         tableView.addSubview(spinner)
         
         navigationController?.isNavigationBarHidden = true
         
         
+        searchView.searchTextField.delegate = self
         
         // Fetching Data using APIManager
         spinner.startAnimating()
@@ -102,23 +106,22 @@ class SoundViewController: UIViewController {
         
         
         searchView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height: 50)
-        tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: (view.height - searchView.height  ) - 175)
+        
         spinner.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         spinner.center = tableView.center
+       
+        playerView.frame = CGRect(x: 0, y: view.height - (tabBarController!.tabBar.height + 50), width: view.width, height: 50)
         
+        tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: view.height - (tabBarController!.tabBar.height + searchView.height + playerView.height + 50))
         
-        
-        
-        
-//        
-        playerView.frame = CGRect(x: 0, y: tableView.bottom, width: view.width, height: 50)
-        
+        print(tabBarController!.tabBar.height + searchView.height + playerView.height)
     }
     
     
     
     
     var localImage = [UIImage]()
+    
     // MARK: Fetching Image
     var id : String?
     
@@ -126,34 +129,25 @@ class SoundViewController: UIViewController {
         
         id = UUID().uuidString
         print("Fetching Image")
-        
-        
-        
-     
-        
+
         let urlString = "http://collections.codecture.co/assets/upload_images/"
         let newString = string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-        let newURLString = urlString + newString!
-//        print(newURLString)
-//
-//
-//        print(newURLString)
         
+        let newURLString = urlString + newString!
+    
         if !newURLString.isEmpty{
             checkBookFileExists(withLink: newURLString){ [weak self] downloadedURL in
                 guard let self = self else{
                     return
                 }
-                //
-                DispatchQueue.main.async {
-                    
-                    //                    self.tableView.reloadData()
-                }
+                
             }
             
             
         }
     }
+    
+    // MARK: Fetching Data from the API into Realm Database
     
     public func fetchingData(){
         
@@ -168,7 +162,7 @@ class SoundViewController: UIViewController {
             case .success(let data):
                 
                 self.myViewModels = data.songs
-
+                
                 DispatchQueue.main.async {
                     self.setUpTableView()
                     self.spinner.stopAnimating()
@@ -180,6 +174,7 @@ class SoundViewController: UIViewController {
                     self.loadData()
                     self.spinner.stopAnimating()
                 }
+                
                 print("Printing Error")
                 print(error)
             }
@@ -215,10 +210,12 @@ class SoundViewController: UIViewController {
     }
     
     
+    // MARK: Fetching Data form the Realm Database into Array
+    
     private func loadData(){
         
         let data = self.realm.objects(SongsDatabase.self)
-
+        
         
         print("Data Count = \(data.count)")
         
@@ -232,7 +229,7 @@ class SoundViewController: UIViewController {
         }
         
         for x in 0...array.count - 1 {
-                        
+            
             fetchingImage(with: (array[x].song_image!))
             
         }
@@ -257,7 +254,7 @@ class SoundViewController: UIViewController {
                         print("file exist")
                         completion(filePath)
                         
-//                        print("File Path ?=  \(filePath)")
+                        //                        print("File Path ?=  \(filePath)")
                         
                     } else {
                         print("file doesnt exist")
@@ -308,38 +305,98 @@ class SoundViewController: UIViewController {
         DispatchQueue.main.async {
             self.playerView.title.text = newdata?.song_title
             self.playerView.subTitle.text = newdata?.song_description
-            self.playerView.soundImageView.image = self.getSavedImage(named: (newdata?.song_image?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))!)
+            self.playerView.soundImageView.image = APIManager.shared.getSavedImage(named: (newdata?.song_image?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))!)
         }
         
         
         
     }
-    func getSavedImage(named: String) -> UIImage? {
-        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-            
-            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
-            
-            
-            
-            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
-        }
-        return nil
-    }
-    
+    var search : String = ""
+ 
     
     
 }
 
-extension SoundViewController: UITableViewDelegate, UITableViewDataSource {
+extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITextFieldDelegate {
+   
+    
+    
+    // MARK: UITextField Delegate Methods.
+    
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+       
+        textField.resignFirstResponder()
+        search = ""
+        
+        searching = false
+        tableView.reloadData()
+        
+        return true
+    }
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+        
+        
+        
+
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        searching = true
+        
+        if string.isEmpty
+           {
+               search = String(search.dropLast())
+                searching = false
+            
+            tableView.reloadData()
+           }
+           else
+           {
+               search=textField.text!+string
+           }
+
+           print(search)
+        
+        let predicate=NSPredicate(format: "SELF.song_title CONTAINS[cd] %@", search)
+        let newData = realm.objects(SongsDatabase.self).filter(predicate)
+        
+      print("newData  \(newData)")
+        print(newData.count)
+        
+        
+        self.searchArrRes = newData
+        tableView.reloadData()
+        
+        
+        return true
+    }
+    
     
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+       
         
+        if searching == true{
+           
+                return searchArrRes!.count
+
+            }
+            else {
+                return realmDataArray?.count ?? 0
+
+            }
         
-        return realmDataArray?.count ?? 0
-    }
-    
+          
+        }
+
+      
+       
+      
+ 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         //
@@ -347,8 +404,19 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         
+        if searching == true{
+            cell.configure(viewModels: searchArrRes![indexPath.row])
+
+            
+        }
+        else {
+            cell.configure(viewModels: realmDataArray![indexPath.row])
+
+        }
+
         
-        cell.configure(viewModels: realmDataArray![indexPath.row])
+        
+        
         cell.playButton.tag = indexPath.row
         cell.delegate = self
         
@@ -371,17 +439,13 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource {
         
         let data = realmDataArray?[indexPath.row]
         print("Current Data")
-//        passData(data!)
-        
-//        if self.audioPlayer.isPlaying{
-//            self.audioPlayer.stop()
-//        }
+       
         
         let vc = PlayerViewController()
         vc.newData = data
         vc.newImage = tableView.cellForRow(at: indexPath)?.imageView?.image
         navigationController?.pushViewController(vc, animated: true)
-
+        
         
     }
     
@@ -396,6 +460,7 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource {
 extension SoundViewController:  SoundsTableViewCellDelegate{
     
     func didTapPlayButton(button: UIButton) {
+        
         print(button.tag)
         
         let data = realmDataArray![button.tag]
@@ -456,7 +521,7 @@ extension SoundViewController: PlayerViewDelegate{
             return
         }
         
-//
+        //
         if audioPlayer.isPlaying {
             audioPlayer.stop()
         }
@@ -467,3 +532,4 @@ extension SoundViewController: PlayerViewDelegate{
     
     
 }
+

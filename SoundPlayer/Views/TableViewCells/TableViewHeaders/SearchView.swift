@@ -9,12 +9,13 @@ import UIKit
 
 class SearchView: UIView {
     
-    private let searchTextField: UITextField = {
+    public let searchTextField: UITextField = {
        let textField = UITextField()
         
         textField.placeholder = "Search"
         textField.insetsLayoutMarginsFromSafeArea = true
-        
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
         
         
         
@@ -57,7 +58,7 @@ class SearchView: UIView {
         
         
         searchTextField.frame = CGRect(x: 20, y: 5, width: width - 40, height: height - 10)
-        underlineView.frame = CGRect(x: 25, y: searchTextField.frame.height - 5, width: width-50, height: 1)
+        underlineView.frame = CGRect(x: 25, y: searchTextField.frame.height , width: width-50, height: 1)
         
 
         
