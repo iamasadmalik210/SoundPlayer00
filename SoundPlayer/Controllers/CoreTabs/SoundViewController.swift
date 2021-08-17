@@ -94,6 +94,8 @@ class SoundViewController: UIViewController {
         spinner.startAnimating()
         fetchingData()
         
+        setupRefreshControl()
+        
         
         
     }
@@ -116,6 +118,27 @@ class SoundViewController: UIViewController {
         
         print(tabBarController!.tabBar.height + searchView.height + playerView.height)
     }
+    
+    
+    // MARK: Implementing Pull down to refresh
+    
+    private func setupRefreshControl() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshTableView(sender:)), for: UIControl.Event.valueChanged)
+        tableView.addSubview(refreshControl)
+        
+    }
+    
+    @objc
+    private func refreshTableView(sender: UIRefreshControl) {
+        print("refreshing...")
+        self.tableView.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+            
+            sender.endRefreshing()
+        })
+
+        }
     
     
     
@@ -437,8 +460,17 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
         
         playerView.isHidden = false
         
-        let data = realmDataArray?[indexPath.row]
-        print("Current Data")
+        var data : SongsDatabase?
+        
+        if searching == true {
+             data = searchArrRes?[indexPath.row]
+        }
+        else {
+             data = realmDataArray?[indexPath.row]
+                    print("Current Data")
+
+        }
+        
        
         
         let vc = PlayerViewController()
