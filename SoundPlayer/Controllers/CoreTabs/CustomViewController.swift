@@ -8,7 +8,7 @@
 import UIKit
 
 class CustomViewController: UIViewController {
-    var viewModels = [CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),]
+    var viewModels = [CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain"),CustomModel(image: UIImage(systemName:"cloud.rain"), title: "Rain")]
     
     
     
@@ -24,7 +24,8 @@ class CustomViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         
-        collectionView.register(SearchView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerView")
+//        collectionView.register(SearchView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerView")
+        
         collectionView.backgroundColor = . systemBackground
         
         return collectionView
@@ -35,20 +36,24 @@ class CustomViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         view.backgroundColor = .systemBackground
-        view.addSubview(collectionView)
         collectionView.delegate = self
         collectionView.dataSource = self
-//        view.addSubview(searchView)
+        view.addSubview(collectionView)
+//        view.addSubview()
+
+        collectionView.addSubview(searchView)
+
+        navigationController?.isNavigationBarHidden  = false
+        navigationController?.title = "Custom Sounds"
         
-        navigationController?.isNavigationBarHidden  = true
 
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        searchView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height: 50)
-        collectionView.frame = CGRect(x: 5, y: searchView.bottom, width: view.width - 10, height:view.height - searchView.height)
-        
+        collectionView.frame = CGRect(x: 5, y: 0, width: view.width - 10, height:view.height)
+
+        searchView.frame = CGRect(x: 0, y: 0, width: view.width, height: 50)
     }
     
 

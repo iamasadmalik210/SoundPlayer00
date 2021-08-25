@@ -202,6 +202,7 @@ class APIManager {
                 }
             } catch {
                 print("an error happened while downloading or saving the file")
+                completion(filePath)
             }
         }
     }

@@ -68,7 +68,7 @@ class SoundsTableViewCell: UITableViewCell {
     public let playButton : UIButton = {
         let button = UIButton()
         
-        button.setImage(UIImage(systemName: "playpause"), for: .normal)
+        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
         
         
         

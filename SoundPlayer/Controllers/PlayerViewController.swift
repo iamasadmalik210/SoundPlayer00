@@ -8,6 +8,7 @@
 import UIKit
 import MediaPlayer
 import SDWebImage
+import UIImageColors
 
 class PlayerViewController: UIViewController {
     
@@ -60,7 +61,7 @@ class PlayerViewController: UIViewController {
        let label = UILabel()
         
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .white
+        label.textColor = .secondaryLabel
 //        label.backgroundColor  = .red
         label.textAlignment  = .center
 
@@ -72,12 +73,22 @@ class PlayerViewController: UIViewController {
     private let playButton : UIButton = {
         let button = UIButton()
         
-        button.setImage(UIImage(systemName: "play")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
+        button.setImage(UIImage(systemName: "play.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
         button.tintColor = .white
         button.imageView?.contentMode = .scaleAspectFill
 //        button.backgroundColor = .red
         button.titleLabel?.font = .systemFont(ofSize: 20)
         return button
+        
+        
+    }()
+    
+    
+    let spinner : UIActivityIndicatorView = {
+       let indicator = UIActivityIndicatorView()
+        
+        
+        return indicator
         
         
     }()
@@ -95,9 +106,18 @@ class PlayerViewController: UIViewController {
         view.addSubview(playButton)
         
         
-        
+        view.addSubview(spinner)
+       
         
         configuringUI()
+        
+        let colors = songImageView.image?.getColors()
+        view.backgroundColor = colors?.background
+        songTitle.textColor = colors?.primary
+        soundSubtitle.textColor = colors?.secondary
+        
+        playButton.tintColor = colors?.detail
+        
         
         
     }
@@ -143,6 +163,8 @@ class PlayerViewController: UIViewController {
         soundSubtitle.frame = CGRect(x: 30, y: songTitle.bottom, width: view.width - 60, height: 30)
         
         playButton.frame = CGRect(x: 30, y: soundSubtitle.bottom+10, width: view.width - 60, height: 50)
+        
+        spinner.center = view.center
 
     
     }
@@ -174,17 +196,28 @@ class PlayerViewController: UIViewController {
         
         
         print(urlstring)
+        if audioPlayer != nil {
+                   if audioPlayer.isPlaying {
+                       playButton.setImage(UIImage(systemName: "play.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
 
-
-       if !urlstring.isEmpty{
-        
-        APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
-            guard let self = self else{
-                return
-            }
-            self.play(url: downloadedURL)
+                       audioPlayer.stop()
+                   }
+                   else {
+                    spinner.startAnimating()
+                   checkAndPlay(urlstring: urlstring)
+                   }
+            
+                  
         }
-    }
+        else {
+            spinner.startAnimating()
+
+            checkAndPlay(urlstring: urlstring)
+
+            
+        }
+
+      
         
         
         
@@ -195,6 +228,22 @@ class PlayerViewController: UIViewController {
        
     // Checking for download
     
+    //
+    private func checkAndPlay(urlstring:String){
+        if !urlstring.isEmpty{
+        
+         
+         APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
+             guard let self = self else{
+                 return
+             }
+             self.play(url: downloadedURL)
+             self.playButton.setImage(UIImage(systemName: "pause.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
+            self.spinner.stopAnimating()
+
+         }
+     }
+    }
     
         
         
@@ -211,6 +260,9 @@ class PlayerViewController: UIViewController {
             let _ = (audioPlayer?.currentTime ?? 0)/(audioPlayer?.duration ?? 0)
             DispatchQueue.main.async {
                 // do what ever you want with that "percentage"
+                
+                self.playButton.setImage(UIImage(systemName: "pause.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
+
             }
 
         } catch let error {

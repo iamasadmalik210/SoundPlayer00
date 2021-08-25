@@ -30,8 +30,12 @@ class SoundViewController: UIViewController {
     
     var realm = try! Realm()
     
+    var isPlayingModel = [Bool]()
+    
+    var buttonState : Bool?
     
     
+     
     
     // MARK: UI's
     
@@ -69,18 +73,23 @@ class SoundViewController: UIViewController {
         super.viewDidLoad()
         //        playerView.isHidden = true
         
+        playerView.isHidden = true
         playerView.delegate = self
-        view.addSubview(playerView)
         
+        buttonState = false
+        
+
         
         // Do any additional setup after loading the view.
         
         view.backgroundColor = .systemBackground
-        view.addSubview(tableView)
         
-        view.addSubview(spinner)
         view.addSubview(searchView)
-        
+        view.addSubview(tableView)
+        view.addSubview(playerView)
+
+        view.addSubview(spinner)
+
         tableView.delegate = self
         tableView.dataSource = self
         tableView.addSubview(spinner)
@@ -98,6 +107,7 @@ class SoundViewController: UIViewController {
         
         
         
+        
     }
     
     
@@ -110,11 +120,12 @@ class SoundViewController: UIViewController {
         searchView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height: 50)
         
         spinner.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        
         spinner.center = tableView.center
        
         playerView.frame = CGRect(x: 0, y: view.height - (tabBarController!.tabBar.height + 50), width: view.width, height: 50)
         
-        tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: view.height - (tabBarController!.tabBar.height + searchView.height + playerView.height + 50))
+        tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: view.height - tabBarController!.tabBar.height)
         
         print(tabBarController!.tabBar.height + searchView.height + playerView.height)
     }
@@ -322,7 +333,6 @@ class SoundViewController: UIViewController {
     private func passData(_ data:SongsDatabase) {
         var newdata : SongsDatabase?
         
-        self.playerView.isHidden = false
         newdata = data
         
         DispatchQueue.main.async {
@@ -458,7 +468,7 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        playerView.isHidden = false
+//        playerView.isHidden = false
         
         var data : SongsDatabase?
         
@@ -492,42 +502,109 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
 extension SoundViewController:  SoundsTableViewCellDelegate{
     
     func didTapPlayButton(button: UIButton) {
+        var data : SongsDatabase?
         
-        print(button.tag)
+
+        self.buttonState = true
         
-        let data = realmDataArray![button.tag]
-        print(data)
-        
-        self.passData(data)
-        let urlstring = "http://collections.codecture.co/assets/upload_files/\(data.song_file!.trimmingCharacters(in: .whitespaces))"
+        print(buttonState)
         
         
+        print(isPlayingModel)
         
-        print(urlstring)
-        
-        
-        if !urlstring.isEmpty{
-            
-            APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
-                guard let self = self else{
-                    return
-                }
-                self.play(url: downloadedURL)
-            }
-            
-            
+        UIView.animate(withDuration: 3.0, delay: 3.0, options: .curveEaseInOut) {
+            self.playerView.isHidden = false
+
+        }
+        if searching == true {
+             data = searchArrRes![button.tag]
+
+        }
+        else {
+             data = realmDataArray![button.tag]
+
         }
         
+        
+                let urlstring = "http://collections.codecture.co/assets/upload_files/\(data!.song_file!.trimmingCharacters(in: .whitespaces))"
+
+        
+        if audioPlayer != nil {
+            
+            print("NOt Nill")
+            
+            
+            if audioPlayer.isPlaying{
+                print("Audio Player Stopped")
+                
+                button.setImage(UIImage(systemName: "play.fill"), for: .normal)
+
+                audioPlayer.stop()
+            }
+            else {
+                audioPlayer.play()
+                button.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+
+                playMusicWithString(urlstring: urlstring)
+                self.passData(data!)
+                print("Play The Music")
+            }
+        }
+            else {
+                
+                print(" Nill")
+
+
+        
+        
+       
+        
+        self.passData(data!)
+        
+        
+        playMusicWithString(urlstring: urlstring)
+
+            
+        
+       
+        
+        
+       
+        
+            }
         
         
         
         
         
     }
+        
+     
+  
+    
+    private func playMusicWithString(urlstring:String){
+        
+        //
+                
+                
+                if !urlstring.isEmpty{
+                    
+                    APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
+                        guard let self = self else{
+                            return
+                        }
+                        self.play(url: downloadedURL)
+                    }
+                }
+        
+    
+    }
+    
     func play(url: URL) {
         print("playing \(url)")
         
         do {
+            
             
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.prepareToPlay()
@@ -555,10 +632,33 @@ extension SoundViewController: PlayerViewDelegate{
         
         //
         if audioPlayer.isPlaying {
+            
+          
+          
+            UIView.transition(with: playerView, duration: 0.4,
+                                 options: .transitionCrossDissolve,
+                                 animations: {
+                                   self.playerView.isHidden = true
+                                 })
+            
+
             audioPlayer.stop()
+        
+       
+            tableView.reloadData()
+            
+            
         }
+        
         else {
-            self.audioPlayer.play()        }
+            UIView.transition(with: playerView, duration: 0.4,
+                                 options: .transitionCrossDissolve,
+                                 animations: {
+                                   self.playerView.isHidden = true
+                                 })
+//            self.audioPlayer.play()
+            
+        }
         print("Audio Stopped")
     }
     

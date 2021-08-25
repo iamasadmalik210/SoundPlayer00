@@ -9,5 +9,13 @@ target 'SoundPlayer' do
   
   pod 'SDWebImage'
   pod 'RealmSwift'
+    pod 'Firebase/Crashlytics'
+    pod 'Firebase/Analytics'
+    pod 'SDDownloadManager'
+    pod 'UIImageColors'
+
+
+
+    
 
 end
