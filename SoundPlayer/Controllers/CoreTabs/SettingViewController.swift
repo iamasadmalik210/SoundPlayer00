@@ -131,10 +131,13 @@ class SettingViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
-        view.backgroundColor = .blue
+        view.backgroundColor = .systemBackground
         view.addSubview(tableView)
+        
         tableView.delegate = self
         tableView.dataSource = self
+        
+        tableView.backgroundColor = .systemBackground
         
         configurableModels()
     }

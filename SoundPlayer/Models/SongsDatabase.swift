@@ -33,18 +33,6 @@ class SongsDatabase : Object,Decodable {
 
     @objc dynamic var song_file : String?
     
-//    @objc dynamic var songImage : UIImage?
-//    @objc dynamic var songAudio : AVAudioFile?
+//    @objc dynamic var isPlaying : Bool = false
 
-//    override static func primaryKey() -> String? {
-//        return "id"
-//    }
-
-    
-    
 }
-
-//class RealmData: Object {
-//
-//    var parentCategory = LinkingObjects(fromType : RealmSongs.self,property:"songsData" )
-//}

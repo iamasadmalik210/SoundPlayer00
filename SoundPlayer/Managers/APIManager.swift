@@ -176,7 +176,9 @@ class APIManager {
 
                     } else {
                         print("file doesnt exist")
+                        print("Downloading Under Process")
                         downloadFile(withUrl: url, andFilePath: filePath, completion: completion)
+                        
                     }
                 } catch {
                     print("file doesnt exist")
@@ -191,20 +193,27 @@ class APIManager {
     }
         
 
-    func downloadFile(withUrl url: URL, andFilePath filePath: URL, completion: @escaping ((_ filePath: URL)->Void)){
+    func downloadFile(withUrl url: URL, andFilePath filePath: URL, completion: @escaping ((_ filePath: URL)->Void)) {
+        
+        
+        
+        
         DispatchQueue.global(qos: .background).async {
             do {
                 let data = try Data.init(contentsOf: url)
                 try data.write(to: filePath, options: .atomic)
                 print("saved at \(filePath.absoluteString)")
                 DispatchQueue.main.async {
+                    
                     completion(filePath)
                 }
+
             } catch {
                 print("an error happened while downloading or saving the file")
                 completion(filePath)
             }
         }
+        
     }
         
     

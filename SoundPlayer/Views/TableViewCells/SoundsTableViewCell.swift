@@ -15,12 +15,16 @@ protocol SoundsTableViewCellDelegate : AnyObject {
     func didTapPlayButton(button:UIButton)
 }
 
+struct BoolModels {
+    var value = false
+}
+
 
 class SoundsTableViewCell: UITableViewCell {
         
     
     weak var delegate : SoundsTableViewCellDelegate?
-    
+    var isPlaying : Bool?
     public let soundImageView : UIImageView = {
         
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
@@ -87,10 +91,15 @@ class SoundsTableViewCell: UITableViewCell {
         
         
         playButton.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
+        
+        isPlaying = false
     }
     @objc func didTapPlay(){
+        
+        isPlaying = true
         delegate?.didTapPlayButton(button: playButton)
         
+    
         
     }
     
@@ -130,7 +139,14 @@ class SoundsTableViewCell: UITableViewCell {
 
            
             
-        }
+     
+        }}
+    
+    public func configureBoolValues(viewModels : BoolModels){
+        
+        self.isPlaying = viewModels.value
+        
+        
         
        
 
