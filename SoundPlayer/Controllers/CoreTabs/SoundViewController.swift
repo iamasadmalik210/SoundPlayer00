@@ -21,9 +21,9 @@ class SoundViewController: UIViewController {
     var isPlayingArray : [BoolModels]?
     
     var newSongsModels : [NewSoundData]?
-    //    var newArray = [SongsDatabase]()
+    
     var realmDataArray : Results<SongsDatabase>?
-    //        var myArray : [SongsDatabase]?
+    
     var audioPlayer : AVAudioPlayer!
     
     var searchView = SearchView()
@@ -34,125 +34,155 @@ class SoundViewController: UIViewController {
     
     var isPlayingModel = [Bool]()
     
+    var playerViewController = PlayerViewController()
     
     var selectedId = ""
     
     var searching : Bool!
-
     
-     
+    
+    
+    
+    
+    var colors = [UIColor.systemRed, UIColor.systemBlue, UIColor.systemOrange,
+                  UIColor.systemPurple,UIColor.systemGreen]
+    var tableViewHeaderText = ""
+    
+    /// an enum of type TableAnimation - determines the animation to be applied to the tableViewCells
+    var currentTableAnimation: TableAnimation = .fadeIn(duration: 0.85, delay: 0.03) {
+        didSet {
+            //            self.tableViewHeaderText = currentTableAnimation.getTitle()
+        }
+    }
+    var animationDuration: TimeInterval = 0.85
+    var delay: TimeInterval = 0.05
+    var fontSize: CGFloat = 26
+    
+    
+    
     
     // MARK: UI's
     
     private let tableView : UITableView = {
-        let tableView = UITableView(frame: UIScreen.main.bounds, style: .plain)
         
+        let tableView = UITableView(frame: UIScreen.main.bounds, style: .plain)
         tableView.register(SoundsTableViewCell.self, forCellReuseIdentifier: "cell")
-        //        tableView.tableHeaderView = SearchView(frame: CGRect(x: 0, y: 0, width: tableView.width, height: 50))
         
         return tableView
-        
-        
         
     }()
     
     private let spinner : UIActivityIndicatorView = {
+        
         let spinner = UIActivityIndicatorView()
         spinner.color = .red
+        
         
         
         return spinner
         
     }()
     
-    
-  
-    
-    
-    
-    
     // MARK: Life Cycle Methods
     
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         
-        
-
+        view.backgroundColor = .systemBackground
         
         searching = false
-        super.viewDidLoad()
-        //        playerView.isHidden = true
-        
         playerView.isHidden = true
         playerView.delegate = self
         
-
+        spinner.transform = CGAffineTransform.init(scaleX: 2, y: 2)
         
-
+        
+        // Spinner to start animating until data get fetched
+        spinner.startAnimating()
         
         // Do any additional setup after loading the view.
         
-        view.backgroundColor = .systemBackground
+        
+        // Adding Subviews
         
         view.addSubview(searchView)
         view.addSubview(tableView)
         view.addSubview(playerView)
-
         view.addSubview(spinner)
-
+        
+        // Assigning Delegates
+        
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.addSubview(spinner)
+        
+        searchView.searchTextField.delegate = self
         
         navigationController?.isNavigationBarHidden = true
         
         
-        searchView.searchTextField.delegate = self
-        
-        // Fetching Data using APIManager
-        spinner.startAnimating()
-//        progressViewLabel.isHidden = true
-        
+        // Calling Methods
         fetchingData()
-        
         setupRefreshControl()
-
+        
+        
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.isHidden = true
+        
+        // set the separatorStyle to none and set the Title for the tableView
+        self.tableView.separatorStyle = .none
+        //        self.tableViewHeaderText = self.currentTableAnimation.getTitle()
+        
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() ) {
+            self.tableView.isHidden = false
+        }
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.didTapPlayerView))
+        playerView.addGestureRecognizer(tap)
+        
+        
         
         
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    @objc
+    func didTapPlayerView(){
+        print("Did Tap Player View ")
         
-        if audioPlayer != nil {
-            if audioPlayer.isPlaying{
-                audioPlayer.stop()
-                playerView.isHidden = true
-            }
-            
-        }
     }
-    override func viewWillAppear(_ animated: Bool) {
-        value = false
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        //
+        //        if audioPlayer != nil{
+        //            if audioPlayer.isPlaying {
+        //                audioPlayer.stop()
+        //            }
+        //        }
     }
+    
+    
+    
     
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         
         searchView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height: 50)
         
         spinner.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         
         spinner.center = tableView.center
-       
+        
         playerView.frame = CGRect(x: 0, y: view.height - (tabBarController!.tabBar.height + 50), width: view.width, height: 50)
         
         tableView.frame = CGRect(x: 0, y: searchView.bottom, width: view.width, height: view.height - tabBarController!.tabBar.height)
         
         
-
+        
     }
     
     
@@ -168,32 +198,35 @@ class SoundViewController: UIViewController {
     @objc
     private func refreshTableView(sender: UIRefreshControl) {
         print("refreshing...")
-        self.tableView.reloadData()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+            //
+            
+            
             
             sender.endRefreshing()
         })
-
-        }
+        
+    }
     
     
     
     
-    var localImage = [UIImage]()
+    //    var localImage = [UIImage]()
     
     // MARK: Fetching Image
-    var id : String?
+    
+    //    var id : String?
     
     private func fetchingImage(with string : String) {
         
-        id = UUID().uuidString
+        //        id = UUID().uuidString
         print("Fetching Image")
-
+        
         let urlString = "http://collections.codecture.co/assets/upload_images/"
         let newString = string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         
         let newURLString = urlString + newString!
-    
+        
         if !newURLString.isEmpty{
             checkBookFileExists(withLink: newURLString){ [weak self] downloadedURL in
                 guard let self = self else{
@@ -205,7 +238,7 @@ class SoundViewController: UIViewController {
                     
                     self.tableView.reloadData()
                 })
-
+                
                 
             }
             
@@ -219,45 +252,44 @@ class SoundViewController: UIViewController {
     // MARK: - Fetching Sounds
     
     private func fetchingSounds(with string : String) {
- 
-
-        id = UUID().uuidString
+        
+        
         print("Fetching Sounds")
-
+        
         let newString = string.trimmingCharacters(in: .whitespaces)
         
-//        let newURLString =
+        //        let newURLString =
         let newURLString = "http://collections.codecture.co/assets/upload_files/\(newString)"
         
-//
+        //
         
         
         self.spinner.startAnimating()
-
+        
         if !newURLString.isEmpty{
-
+            
             print("Start")
             APIManager.shared.checkBookFileExists(withLink: newURLString){ [weak self] downloadedURL in
                 guard let self = self else{
                     return
-                
-                    }
-                self.spinner.stopAnimating()
-                        
-            
+                    
                 }
-                
-                // Reloading Data
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
-                    self.tableView.reloadData()
-                })
                 self.spinner.stopAnimating()
+                
                 
             }
             
-        print("Done")
-
+            // Reloading Data
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+                self.tableView.reloadData()
+            })
+            self.spinner.stopAnimating()
+            
         }
+        
+        print("Done")
+        
+    }
     
     
     // MARK: Fetching Data from the API into Realm Database
@@ -326,12 +358,10 @@ class SoundViewController: UIViewController {
     // MARK: Fetching Data form the Realm Database into Array
     
     private func loadData(){
-
+        
         let data = self.realm.objects(SongsDatabase.self)
         
-        
         print("Data Count = \(data.count)")
-        
         
         realmDataArray = data
         
@@ -340,21 +370,19 @@ class SoundViewController: UIViewController {
         guard let array = realmDataArray else{
             return
         }
-
+        
         for x in 0...array.count-1  {
-             
+            
             fetchingImage(with: (array[x].song_image!))
             fetchingSounds(with: (array[x].song_file!))
             
             
         }
-
-        
         
         tableView.reloadData()
-
         
     }
+    
     
     // For downloading image
     func checkBookFileExists(withLink link: String, completion: @escaping ((_ filePath: URL)->Void)){
@@ -429,22 +457,19 @@ class SoundViewController: UIViewController {
     }
     var search : String = ""
     var value = false
-    var musicisPlaying : Bool?
     
     
 }
 
 extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITextFieldDelegate {
-   
+    
     
     
     // MARK: UITextField Delegate Methods.
     
-    
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
-       
+        
         textField.resignFirstResponder()
         search = ""
         
@@ -457,30 +482,30 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
         
         
         
-
+        
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         searching = true
         
         if string.isEmpty
-           {
-               search = String(search.dropLast())
-                searching = false
+        {
+            search = String(search.dropLast())
+            searching = false
             
             tableView.reloadData()
-           }
-           else
-           {
-               search=textField.text!+string
-           }
-
-           print(search)
+        }
+        else
+        {
+            search=textField.text!+string
+        }
+        
+        print(search)
         
         let predicate=NSPredicate(format: "SELF.song_title CONTAINS[cd] %@", search)
         let newData = realm.objects(SongsDatabase.self).filter(predicate)
         
-      print("newData  \(newData)")
+        print("newData  \(newData)")
         print(newData.count)
         
         
@@ -492,28 +517,28 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
     }
     
     
-    
+    // TableView Delegate Methods
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-       
         
         if searching == true{
-           
-                return searchArrRes!.count ?? 0
-
-            }
-            else {
-                return realmDataArray?.count ?? 0
-
-            }
-        
-          
+            
+            return searchArrRes?.count ?? 0
+            
         }
-
-      
-       
-      
- 
+        else {
+            
+            return realmDataArray?.count ?? 0
+            
+        }
+        
+        
+    }
+    
+    
+    
+    
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         //
@@ -532,27 +557,27 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
         }
         else {
             cell.configure(viewModels: realmDataArray![indexPath.row])
-            print("the selected id == \(self.selectedId)")
             
             if selectedId == realmDataArray![indexPath.row].id {
                 cell.playButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
                 
             } else {
                 cell.playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+                
+                
             }
         }
-
+        
         
         
         
         cell.playButton.tag = indexPath.row
-//        cell.playButton.addTarget(self, action: #selector(playSoundBtn(button:)), for: .touchUpInside)
         
-       
+        
         
         cell.delegate = self
-
-            
+        
+        
         
         
         return cell
@@ -560,28 +585,12 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
         
     }
     
-    @objc func playSoundBtn(button: UIButton) {
-//        print("We are playing sound")
-//
-//
-//
-//        if searching == true{
-//            let song = searchArrRes![button.tag]
-//            if self.selectedId == song.id {
-//                self.selectedId = ""
-//            } else {
-//            self.selectedId = song.id!
-//            }
-//        }
-//        else {
-//            let song = realmDataArray![button.tag]
-//            if self.selectedId == song.id {
-//                self.selectedId = ""
-//            } else {
-//            self.selectedId = song.id!
-//            }
-//        }
-//        tableView.reloadData()
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // fetch the animation from the TableAnimation enum and initialze the TableViewAnimator class
+        //
+        //        let animation = currentTableAnimation.getAnimation()
+        //        let animator = TableViewAnimator(animation: animation)
+        //        animator.animate(cell: cell, at: indexPath, in: tableView)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -594,28 +603,35 @@ extension SoundViewController: UITableViewDelegate, UITableViewDataSource , UITe
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-//        playerView.isHidden = false
+        //        playerView.isHidden = false
         
         var data : SongsDatabase?
         
         if searching == true {
-             data = searchArrRes?[indexPath.row]
+            data = searchArrRes?[indexPath.row]
         }
         else {
-             data = realmDataArray?[indexPath.row]
-                    print("Current Data")
+            data = realmDataArray?[indexPath.row]
         }
         if audioPlayer != nil{
             if audioPlayer.isPlaying {
                 value = true
             }
         }
-       
+        
         
         let vc = PlayerViewController()
+        
+        print(selectedId)
+        
+        vc.selectedId = selectedId
+        
+        vc.delegate = self
+        
         vc.newData = data
+        
         vc.newImage = tableView.cellForRow(at: indexPath)?.imageView?.image
-        vc.state = value
+        
         navigationController?.pushViewController(vc, animated: true)
         
         
@@ -634,121 +650,113 @@ extension SoundViewController:  SoundsTableViewCellDelegate{
     func didTapPlayButton(button: UIButton) {
         var data : SongsDatabase?
         
+        print("Button Tag == \(button.tag) ")
+        print("ID == \(selectedId)")
+        
+        
         
         
         // MARK: For Adjusting Playing Button
-        
-        print("We are playing sound")
-        
-        
+        let song = realmDataArray![button.tag]
         
         if searching == true{
             let song = searchArrRes![button.tag]
             if self.selectedId == song.id {
                 self.selectedId = ""
             } else {
-            self.selectedId = song.id!
+                self.selectedId = song.id!
             }
         }
         else {
-            let song = realmDataArray![button.tag]
             if self.selectedId == song.id {
                 self.selectedId = ""
             } else {
-            self.selectedId = song.id!
+                self.selectedId = song.id!
             }
+            
+            
+            
         }
-        tableView.reloadData()
-    
+        self.tableView.reloadData()
         
         
         
         
         
         
-        print("Button tag = \(button.tag)")
+        
         
         if searching == true {
-             data = searchArrRes![button.tag]
-
+            data = searchArrRes![button.tag]
+            
         }
         else {
-             data = realmDataArray![button.tag]
-
+            data = realmDataArray![button.tag]
+            
         }
         
         
-                let urlstring = "http://collections.codecture.co/assets/upload_files/\(data!.song_file!.trimmingCharacters(in: .whitespaces))"
-
+        
+        let urlstring = "http://collections.codecture.co/assets/upload_files/\(data!.song_file!.trimmingCharacters(in: .whitespaces))"
+        
         
         if audioPlayer != nil {
             
-            print("NOt Nill")
-            
-            
             if audioPlayer.isPlaying{
-                print("Audio Player Stopped")
                 
-//                button.setImage(UIImage(systemName: "play.fill"), for: .normal)
-
-                audioPlayer.stop()
+                print("\(selectedId) == \(song.id)")
+                if self.selectedId == "" {
+                    self.audioPlayer.stop()
+                    print("Audio Player Stopped")
+                    self.playerView.isHidden = true
+                } else {
+                    
+                    self.passData(data!)
+                    playMusicWithString(urlstring: urlstring)
+                    
+                }
+                
+                
+                
+                //
             }
             else {
-                audioPlayer.play()
-//                button.setImage(UIImage(systemName: "pause.fill"), for: .normal)
-
-                playMusicWithString(urlstring: urlstring)
+                
                 self.passData(data!)
+                playMusicWithString(urlstring: urlstring)
+                
+                
                 print("Play The Music")
             }
         }
-            else {
-                
-                print(" Nill")
-
-
-        
-        
-       
-        
-        self.passData(data!)
-        
-        
-        playMusicWithString(urlstring: urlstring)
-
+        else {
+            self.passData(data!)
             
-        
-       
-        
-        
-
-
-            }
-        
-        
-     //   self.buttonState = [false,false,false,false,false,false,false,false,false]
-        
+            
+            playMusicWithString(urlstring: urlstring)
+            
+        }
         
     }
-        
-     
-  
+    
+    
+    
     
     private func playMusicWithString(urlstring:String){
         
         //
-                
-                
-                if !urlstring.isEmpty{
-                    
-                    APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
-                        guard let self = self else{
-                            return
-                        }
-                        self.play(url: downloadedURL)
-                    }
+        
+        
+        if !urlstring.isEmpty{
+            
+            APIManager.shared.checkBookFileExists(withLink: urlstring){ [weak self] downloadedURL in
+                guard let self = self else{
+                    return
                 }
-       
+                self.play(url: downloadedURL)
+            }
+        }
+        
     }
     
     func play(url: URL) {
@@ -766,7 +774,7 @@ extension SoundViewController:  SoundsTableViewCellDelegate{
                 // do what ever you want with that "percentage"
                 UIView.animate(withDuration: 3.0, delay: 3.0, options: .curveEaseInOut) {
                     self.playerView.isHidden = false
-
+                    
                 }
             }
             
@@ -785,36 +793,32 @@ extension SoundViewController: PlayerViewDelegate{
             return
         }
         
-    
+        
         
         //
         if audioPlayer.isPlaying {
             
-          
-          
             UIView.transition(with: playerView, duration: 0.4,
-                                 options: .transitionCrossDissolve,
-                                 animations: {
-                                   self.playerView.isHidden = true
-                                 })
+                              options: .transitionCrossDissolve,
+                              animations: {
+                                self.playerView.isHidden = true
+                              })
             
-
+            
             audioPlayer.stop()
-        
-       
+            selectedId = ""
             tableView.reloadData()
-            
             
         }
         
         else
         {
             UIView.transition(with: playerView, duration: 0.4,
-                                 options: .transitionCrossDissolve,
-                                 animations: {
-                                   self.playerView.isHidden = true
-                                 })
-//            self.audioPlayer.play()
+                              options: .transitionCrossDissolve,
+                              animations: {
+                                self.playerView.isHidden = true
+                              })
+            //            self.audioPlayer.play()
             
         }
         print("Audio Stopped")
@@ -823,3 +827,69 @@ extension SoundViewController: PlayerViewDelegate{
     
 }
 
+
+extension SoundViewController: PlayerViewControllerDelegate{
+    
+    
+    
+    func didTapPlayButton(selectedId: String) {
+        
+        print("Current id \(self.selectedId)")
+        
+        print("passed ID id \(self.selectedId)")
+        
+        
+        self.selectedId = selectedId
+        if selectedId == "" {
+            
+            if audioPlayer != nil{
+                audioPlayer.stop()
+            }
+            
+            self.playerView.isHidden = true
+            self.tableView.reloadData()
+            print("Stop Music")
+        }
+        else {
+            print("Play Music")
+            
+            if audioPlayer != nil {
+                if !audioPlayer.isPlaying{
+                    let  string = Int(selectedId)! - 1
+                    loadAndPlay(string: string)
+                }
+                else {
+                    let  string = Int(selectedId)! - 1
+                    loadAndPlay(string: string)
+                    
+                }
+                
+            }
+            else {
+                let  string = Int(selectedId)! - 1
+                loadAndPlay(string: string)
+                
+            }
+            self.tableView.reloadData()
+        }
+        
+        
+        
+        
+        
+    }
+    
+    private func loadAndPlay(string:Int){
+        let song =  realmDataArray?[string].song_file!
+        let data = realmDataArray?[string]
+        print("song Name = \(song)")
+        
+        let urlstring = "http://collections.codecture.co/assets/upload_files/\(song!.trimmingCharacters(in: .whitespaces))"
+        
+        
+        passData(data!)
+        playMusicWithString(urlstring: urlstring)
+        self.tableView.reloadData()
+        
+    }
+}

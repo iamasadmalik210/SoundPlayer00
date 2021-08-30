@@ -11,8 +11,14 @@ import SDWebImage
 import UIImageColors
 import SDDownloadManager
 
+protocol PlayerViewControllerDelegate  {
+    func didTapPlayButton(selectedId: String)
+}
+
 class PlayerViewController: UIViewController {
     
+    
+  var delegate : PlayerViewControllerDelegate?
     var music : String?
     var state : Bool?
     
@@ -25,7 +31,11 @@ class PlayerViewController: UIViewController {
     var playerItem : AVPlayerItem?
     let downloadManager = SDDownloadManager.shared
     
+    var selectedId: String = ""
+    
     let directoryName : String = "TestDirectory"
+    
+//    var completionHandler : (String) -> ()
     
     
     private let timerLabel : UILabel = {
@@ -120,12 +130,15 @@ class PlayerViewController: UIViewController {
         view.addSubview(songImageView)
         view.addSubview(soundSubtitle)
         view.addSubview(playButton)
-        view.addSubview(downloadingLabel)
+        
+//        view.addSubview(downloadingLabel)
         
         
         view.addSubview(spinner)
         self.isPlaying = self.state
         configuringUI()
+        
+        // BY using UIImageColors Pods
         
         let colors = songImageView.image?.getColors()
         view.backgroundColor = colors?.background
@@ -133,39 +146,45 @@ class PlayerViewController: UIViewController {
         soundSubtitle.textColor = colors?.secondary
         
         playButton.tintColor = colors?.detail
-        downloadingLabel.textColor = colors?.secondary
         
-        downloadingLabel.isHidden = true
-        print(isPlaying)
+        print("Selected Id \(selectedId)")
+       if  self.selectedId == newData?.id{
+        print("\(selectedId) == \(newData?.id)")
         
-        if isPlaying!{
-          didTapPlay()
+        didTapPlay()
             
         }
+       else {
+        print("Not Playing")
+       }
+        
+
+        print(newData)
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if audioPlayer != nil {
-            if audioPlayer.isPlaying{
-                audioPlayer.stop()
-            }
-            playButton.setImage(UIImage(systemName: "play.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
-            
-            
-        }
+//        if audioPlayer != nil {
+//            if audioPlayer.isPlaying{
+//                audioPlayer.stop()
+//            }
+//            playButton.setImage(UIImage(systemName: "play.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
+//
+//
+//        }
     }
-   
+//    public func passData(completion: ((String) -> Void)){
+//
+//        completion(selectedId)
+//
+//    }
     
     private func configuringUI(){
-        let timerValue = UserDefaults.standard.value(forKey: "timer_value")
         
-        timerLabel.text = timerValue as? String
-        
-        view.backgroundColor = .darkGray
-        //        print(newData)
-        
+//        let timerValue = UserDefaults.standard.value(forKey: "timer_value")
+//        timerLabel.text = timerValue as? String
         
         songTitle.text = newData?.song_title
         soundSubtitle.text  = newData?.song_description
@@ -174,11 +193,6 @@ class PlayerViewController: UIViewController {
             print("Image Error")
             return
         }
-        
-        // getting image from the url
-        
-        //        songImageView.sd_setImage(with: URL(string: "http://collections.codecture.co/assets/upload_images/\(selectedImage)"), completed: nil)
-        
         
         songImageView.image = APIManager.shared.getSavedImage(named: selectedImage.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
         
@@ -191,6 +205,7 @@ class PlayerViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         timerLabel.frame = CGRect(x: 40, y: view.safeAreaInsets.top+20, width: view.width-80, height: 40)
         
         songImageView.frame = CGRect(x: 100, y: view.safeAreaInsets.top + 100, width: view.width-200, height: 200)
@@ -210,55 +225,55 @@ class PlayerViewController: UIViewController {
         
     }
     
+    var completionHandler: ((String) -> Void)?
 
+   
+    
+
+    
+ 
     @objc func didTapPlay(){
         
         guard let musicName = newData?.song_file?.trimmingCharacters(in: .whitespaces) else {
             print("song Name Error ")
             return
         }
-        
-        
-        print(musicName)
-        
+
+
         let urlstring = "http://collections.codecture.co/assets/upload_files/\(musicName)"
-        
-        print("url ssting")
-        print(urlstring)
-        
-        
-        print(urlstring)
+
         if audioPlayer != nil {
             if audioPlayer.isPlaying {
                 playButton.setImage(UIImage(systemName: "play.fill")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)), for: .normal)
-                
+                print("NotPlaying")
+
+                delegate?.didTapPlayButton(selectedId: "")
                 audioPlayer.stop()
             }
-            
+
             else {
-                
+                print("isplaying")
+
                 checkAndPlay(urlstring: urlstring)
+                delegate?.didTapPlayButton(selectedId: selectedId)
+
             }
-            
-            
+
+
         }
         else {
+
+            print("Selecred ID = \(selectedId)")
             spinner.startAnimating()
-            print(urlstring)
-            //            foregrounDownloadDemo(urlString: urlstring)
-            
             checkAndPlay(urlstring: urlstring)
-            
-            
+            print("isplaying")
+
+            delegate?.didTapPlayButton(selectedId: (newData?.id)!)
+
         }
-        
-        
-        
-        
-        
-        
-        
+
     }
+    
     
     
     private func checkAndPlay(urlstring:String){
@@ -293,6 +308,7 @@ class PlayerViewController: UIViewController {
             audioPlayer?.prepareToPlay()
             //            audioPlayer?.delegate = self
             audioPlayer?.play()
+            audioPlayer.volume = 0.5
             let _ = (audioPlayer?.currentTime ?? 0)/(audioPlayer?.duration ?? 0)
             DispatchQueue.main.async {
                 // do what ever you want with that "percentage"

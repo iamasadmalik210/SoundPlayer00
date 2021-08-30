@@ -93,11 +93,7 @@ class APIManager {
         print(type)
         
         let newurl = type.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-       
-//        guard let url = URL(string: "https://static.dw.com/image/51029829_303.jpg") else {
-//            print("url rrror")
-//                return
-//            }
+     
         guard let url = URL(string: Constants.resourceURL + "\(type)") else {
             print("url rrror")
                 return

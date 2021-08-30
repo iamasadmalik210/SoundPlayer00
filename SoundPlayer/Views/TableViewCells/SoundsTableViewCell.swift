@@ -152,17 +152,4 @@ class SoundsTableViewCell: UITableViewCell {
 
     }
     
-    
-//    
-//    func getSavedImage(named: String) -> UIImage? {
-//        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-//            
-////            print("URL ==\(URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)")
-//            
-//            
-//            
-//            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
-//        }
-//        return nil
-//}
 }

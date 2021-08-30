@@ -13,12 +13,12 @@ class SettingViewController: UIViewController {
     var timerValues = ["1 Minutes","2 Minutes","30 Minutes","60 Minutes","Unlimited"]
     
     var volumePercentage = ["Mute","25%","50%","75%","Loud"]
-
+    
     
     private let tableView : UITableView = {
         let tableView = UITableView(frame: .zero,style: .grouped)
-      
-//        tableView.register(SoundsTableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        //        tableView.register(SoundsTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
         tableView.backgroundColor = .black
@@ -32,7 +32,7 @@ class SettingViewController: UIViewController {
     
     
     private func configurableModels(){
-    
+        
         sections.append(Section(title: "Profile", options: [Option(title: "View Your Profile", handler:{ [weak self] in
             DispatchQueue.main.async {
                 
@@ -48,7 +48,7 @@ class SettingViewController: UIViewController {
                     
                     return
                 }
-               
+                
                 
                 let vc = SoundSettingViewController()
                 
@@ -59,16 +59,16 @@ class SettingViewController: UIViewController {
             }
         }),Option(title: "Adjust Volume", handler: {
             DispatchQueue.main.async {
-//                guard let volume = self.volumePercentage else {
-//                                print("Volume value error")
-//
-//                                return
-//                            }
-                            
-                            
-                            let vc = SoundSettingViewController()
-                    vc.pickerViewData = self.volumePercentage
-                            self.navigationController?.pushViewController(vc, animated: true)
+                //                guard let volume = self.volumePercentage else {
+                //                                print("Volume value error")
+                //
+                //                                return
+                //                            }
+                
+                
+                let vc = SoundSettingViewController()
+                vc.pickerViewData = self.volumePercentage
+                self.navigationController?.pushViewController(vc, animated: true)
                 
             }
             
@@ -78,57 +78,57 @@ class SettingViewController: UIViewController {
         })]))
         
     }
-         
+    
     
     private func signOutTapped() {
         
         print("signout tappped")
-//
-//        let alert = UIAlertController(title: "Sign out", message: "Are you sure?", preferredStyle: .alert)
-//        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-//        alert.addAction(UIAlertAction(title: "Sign out", style: .destructive, handler: { _ in
-//
-//            AuthManager.shared.singOut { [weak self] signedOut in
-//
-//                if signedOut {
-//                    DispatchQueue.main.async {
-//
-//
-//
-//                        let navVC = UINavigationController(rootViewController:WelcomeViewController())
-//
-//                        navVC.navigationBar.prefersLargeTitles = true
-//                        navVC.navigationController?.navigationItem.largeTitleDisplayMode = .always
-//                        navVC.modalPresentationStyle = .fullScreen
-//                        self?.present(navVC, animated: true, completion: {
-//
-//                        })
-//        }
-//
-//                }
-//
-//            }
-//
-//        }))
-//        present(alert, animated: true, completion: nil)
-//        
-//
+        //
+        //        let alert = UIAlertController(title: "Sign out", message: "Are you sure?", preferredStyle: .alert)
+        //        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        //        alert.addAction(UIAlertAction(title: "Sign out", style: .destructive, handler: { _ in
+        //
+        //            AuthManager.shared.singOut { [weak self] signedOut in
+        //
+        //                if signedOut {
+        //                    DispatchQueue.main.async {
+        //
+        //
+        //
+        //                        let navVC = UINavigationController(rootViewController:WelcomeViewController())
+        //
+        //                        navVC.navigationBar.prefersLargeTitles = true
+        //                        navVC.navigationController?.navigationItem.largeTitleDisplayMode = .always
+        //                        navVC.modalPresentationStyle = .fullScreen
+        //                        self?.present(navVC, animated: true, completion: {
+        //
+        //                        })
+        //        }
+        //
+        //                }
+        //
+        //            }
+        //
+        //        }))
+        //        present(alert, animated: true, completion: nil)
+        //
+        //
         
         
     }
     
     private func viewProfile(){
         
-//        let vc = ProfileViewController()
-//        vc.title = "Profile"
-//        vc.navigationItem.largeTitleDisplayMode = .never
-//        navigationController?.pushViewController(vc, animated: true)
+        //        let vc = ProfileViewController()
+        //        vc.title = "Profile"
+        //        vc.navigationItem.largeTitleDisplayMode = .never
+        //        navigationController?.pushViewController(vc, animated: true)
     }
     
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         
         view.backgroundColor = .systemBackground
@@ -146,8 +146,8 @@ class SettingViewController: UIViewController {
         tableView.frame = view.bounds
     }
     
-
-   
+    
+    
 }
 extension SettingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -176,10 +176,10 @@ extension SettingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-       
+        
         tableView.deselectRow(at: indexPath, animated: true)
         
-//        call for handler in the table viewcell
+        //        call for handler in the table viewcell
         let model = sections[indexPath.section].options[indexPath.row]
         
         model.handler()
@@ -187,9 +187,9 @@ extension SettingViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     
- func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-//        let model = sections[indexPath.section].options[indexPath.row]
+        //        let model = sections[indexPath.section].options[indexPath.row]
         let model = sections[section]
         return model.title
     }
